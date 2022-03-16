@@ -18,27 +18,30 @@ class Honeypot:
 
 class Attacker:
 
-    def __init__(self, cls="random", tools):
+    def __init__(self, tools, cls="random"):
         self.cls = cls
         self.tools = tools
 
     def prob_to_attack(self, projects, honeypots, probs_projects=0, probs_honeypots=0):
         dict = {}
-        combine_projects = projects + honeypots
+        combine_projects = list(projects.keys()) + list(honeypots.keys())
         combine_probs = probs_projects + probs_honeypots
         l = len(combine_projects)
         if probs_projects != 0:
             for i in range(l):
-                dict[combine_projects[i]]: combine_probs[i]
+                dict[combine_projects[i]] = combine_probs[i]
         else:
             for i in range(l):
-                dict[combine_projects[i]]: np.random.rand()
+                dict[combine_projects[i]] = np.random.rand()
 
         return dict
 
-    def sequence(self, projects):
+    def sequence(self, projects, honeypots):
+        combine_projects = list(projects.keys()) + list(honeypots.keys())
+
         if self.cls == "random":
-            return random.shuffle(projects)
+            random.shuffle(combine_projects)
+            return combine_projects
 
 
 class Defender:
