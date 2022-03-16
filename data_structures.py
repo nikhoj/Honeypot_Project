@@ -4,15 +4,15 @@ import numpy as np
 
 class Project:
 
-    def __init__(self, id, val):
-        self.id = id
+    def __init__(self, name, val):
+        self.id = name
         self.val = val
 
 
 class Honeypot:
 
-    def __init__(self, id, val):
-        self.id = id
+    def __init__(self, name, val):
+        self.id = name
         self.val = val
 
 
@@ -37,7 +37,7 @@ class Attacker:
         return dict
 
     def sequence(self, projects, honeypots):
-        combine_projects = list(projects.keys()) + list(honeypots.keys())
+        combine_projects = projects + honeypots
 
         if self.cls == "random":
             random.shuffle(combine_projects)
