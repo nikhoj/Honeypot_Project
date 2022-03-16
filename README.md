@@ -30,11 +30,12 @@ code blocks for commands
 
 Contributors names and contact info
 
-Md Mahabub Uz Zaman
+
 Chang Liu
 Ahmed Sunny
 Dr. Lin Chen
 Liangde Tao
+Md Mahabub Uz Zaman (myweb.ttu.edu/mdmzaman)
 
 ## Version History
 
@@ -43,13 +44,9 @@ Liangde Tao
 
 ## License
 
-This project is licensed under the [NAME HERE] License - see the LICENSE.md file for details
+NA
 
 ## Acknowledgments
 
-Inspiration, code snippets, etc.
-* [awesome-readme](https://github.com/matiassingers/awesome-readme)
-* [PurpleBooth](https://gist.github.com/PurpleBooth/109311bb0361f32d87a2)
-* [dbader](https://github.com/dbader/readme-template)
-* [zenorocha](https://gist.github.com/zenorocha/4526327)
-* [fvcproductions](https://gist.github.com/fvcproductions/1bfc2d4aecb01a834b46)
+Texas Tech University, Department of Computer Science
+Zheizhang University, Department of Computer Science
