@@ -31,10 +31,10 @@ code blocks for commands
 Contributors names and contact info
 
 
-Chang Liu
-Ahmed Sunny
-Dr. Lin Chen
-Liangde Tao
+Chang Liu,
+Ahmed Sunny,
+Dr. Lin Chen,
+Liangde Tao,
 Md Mahabub Uz Zaman (myweb.ttu.edu/mdmzaman)
 
 ## Version History
@@ -48,5 +48,5 @@ NA
 
 ## Acknowledgments
 
-Texas Tech University, Department of Computer Science
-Zheizhang University, Department of Computer Science
+1. Texas Tech University, Department of Computer Science,
+2. Zheizhang University, Department of Computer Science
