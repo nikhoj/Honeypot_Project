@@ -3,11 +3,11 @@ import pandas as pd
 from data_structures import Project, Honeypot, Attacker, Defender
 
 # data Preparation
-russia = Attacker(tools=1)
+russia = Attacker(tools=3)
 ukraine = Defender(budget=1000)
 
-l1 = 2  # len of projects
-l2 = 1  # len of honeypots
+l1 = 5  # len of projects
+l2 = 5  # len of honeypots
 
 armored_tank = []   # projects
 air_defense = []    # Honeypots
@@ -66,84 +66,20 @@ for attack in seq:
             
             #if its touched by attacker
             psum = 0
+            temp2 = temp.copy()
             for t in range(russia.tools):
                 
                 calc = temp[t+2] *(1 - prob_attack[attack]) + temp[t+1] * prob_attack[attack]
                 psum += calc
-                temp[t+2] = calc
+                temp2[t+2] = calc
                 
-            temp[1] = 1 - psum
+            temp2[1] = 1 - psum
             b = temp[-1]
-            temp[-1] = b + cost_build[attack]
-            df = df.append(temp, ignore_index = True)
-            print('good')
-        else:
-            pass
-            
-        
-    '''
-    for row in range(len(df2)):
-        temp = df2.iloc[row,:].to_frame()
-        
-    
-        #print(temp)
-        
-        if attack not in armored_tank:
-            #print( 'it is not a armored tank')
-            
-            # if the honey was not touched
-            #df = df.append(temp, ignore_index=True)
-            df = pd.concat([df,temp.T], ignore_index = True)
-            df.iloc[-1,0] = attack.name
-            print(df)
-            break
-            
-            
-            #if the honeypot is touched by the attacker
-            for i in range(russia.tools+1):
-                if i != 0:
-                    temp.iloc[i+1,0] = temp.iloc[i+1,0] *(1 - prob_attack[attack]) + temp.iloc[i,0] * prob_attack[attack]
-                else:
-                    temp.iloc[i+1,0] = temp.iloc[i+1,0] *(1 - prob_attack[attack])
-            
-            temp.iloc[-1,0] = temp.iloc[-1,0] + cost_build[attack]
-            df = df.append(temp, ignore_index=True)
-            df.iloc[-1,0] = attack.name
-            
-            
+            temp2[-1] = b + cost_build[attack]
+            df = df.append(temp2, ignore_index = True)
             
         else:
-            #print(' is a armored tank')
-            
-            p_temp = temp.iloc[1:-3,0].sum()
+            psum = temp[1:-3].sum()
                 
-            temp.iloc[-2,0] = prob_attack[attack] * attack.val * p_temp + temp.iloc[-2,0]
+            temp[-2] = prob_attack[attack] * attack.val * psum + temp[-2]
             df = df.append(temp, ignore_index=True)
-            df.iloc[-1,0] = attack.name
-        
-           
-    
-    #eliminate all the dominated states
-    lr = len(df) - 1        #last row
-    print(lr)
-    for i in range(lr,0,-1):
-        
-        if df.iloc[i,0] == attack.name:
-            
-            for j in range(i-1,0,-1):
-                if df.iloc[j,0:-1].equals(df.iloc[i,0:-1]):
-                    
-                    
-                    
-                    if df.iloc[j,-1] < df.iloc[i,-1]:
-                        df = df.drop(labels = i)    # j dominates i
-                        #df = df.reset_index()
-                    else:
-                        df = df.drop(labels = j)    # i dominates j
-                        #df = df.reset_index()
-                    
-                elif df.iloc[j,0] != attack.name:
-                    break
-        else:
-            break
-        '''
