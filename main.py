@@ -26,26 +26,62 @@ cost_build = ukraine.cost_to_build(honeypots=air_defense)
 
 
 
-
 # Algorithm start here
 
 seq = russia.sequence(projects=armored_tank, honeypots=air_defense)  # sequence initializer
 
 
 # dataFrame initialization
-
+#F = {0 : [0] * (russia.tools + 4)}
+#for h in range(1,l1 + l2 + 1):
+ #   if seq[h] in armored_tank:
+  #      F[h] = [F[h-1], F[h-1]]
+        
+        
 CP_list = []  # cumulative probability list, used as column name
 for i in range(russia.tools + 1):
     CP_list.append('P' + str(i))
-df_column = ['artillery'] + CP_list + ['exp_loss', 'invested_amt']
+df_column = ['h'] + CP_list + ['exp_loss', 'invested_amt']
 
 df = pd.DataFrame(np.zeros((1, russia.tools + 4)), columns=df_column)   # container
 df.iloc[0, 1] = 1   # Initially the probability of losing less than or equal to 0 tool is 1
 
 
-
+h = 0
 for attack in seq:
-    df2 = df.copy()
+    h += 1
+    temp_df = df[df.loc[:,'h'] == h-1]
+    
+    #temp_df = temp_df.reset_index()
+    
+    for row in range(len(temp_df)):
+        
+        temp = temp_df.iloc[row,:]        
+        temp[0] = h        
+        
+        if attack not in armored_tank:
+            
+            #if its not touched by attacker
+            df = df.append(temp , ignore_index = True)
+            
+            #if its touched by attacker
+            psum = 0
+            for t in range(russia.tools):
+                
+                calc = temp[t+2] *(1 - prob_attack[attack]) + temp[t+1] * prob_attack[attack]
+                psum += calc
+                temp[t+2] = calc
+                
+            temp[1] = 1 - psum
+            b = temp[-1]
+            temp[-1] = b + cost_build[attack]
+            df = df.append(temp, ignore_index = True)
+            print('good')
+        else:
+            pass
+            
+        
+    '''
     for row in range(len(df2)):
         temp = df2.iloc[row,:].to_frame()
         
@@ -86,7 +122,7 @@ for attack in seq:
             df.iloc[-1,0] = attack.name
         
            
-    '''
+    
     #eliminate all the dominated states
     lr = len(df) - 1        #last row
     print(lr)
@@ -111,6 +147,3 @@ for attack in seq:
         else:
             break
         '''
-                    
-                    
-            
