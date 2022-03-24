@@ -3,11 +3,11 @@ import pandas as pd
 from data_structures import Project, Honeypot, Attacker, Defender
 
 # data Preparation
-russia = Attacker(tools=3)
+russia = Attacker(tools=8)
 ukraine = Defender(budget=1000)
 
-l1 = 5  # len of projects
-l2 = 5  # len of honeypots
+l1 = 20  # len of projects
+l2 = 15  # len of honeypots
 
 armored_tank = []   # projects
 air_defense = []    # Honeypots
@@ -29,14 +29,7 @@ cost_build = ukraine.cost_to_build(honeypots=air_defense)
 # Algorithm start here
 
 seq = russia.sequence(projects=armored_tank, honeypots=air_defense)  # sequence initializer
-
-
-# dataFrame initialization
-#F = {0 : [0] * (russia.tools + 4)}
-#for h in range(1,l1 + l2 + 1):
- #   if seq[h] in armored_tank:
-  #      F[h] = [F[h-1], F[h-1]]
-        
+       
         
 CP_list = []  # cumulative probability list, used as column name
 for i in range(russia.tools + 1):
@@ -50,6 +43,7 @@ df.iloc[0, 1] = 1   # Initially the probability of losing less than or equal to 
 h = 0
 for attack in seq:
     h += 1
+    print('now working on h = {}'.format(h))
     temp_df = df[df.loc[:,'h'] == h-1]
     
     #temp_df = temp_df.reset_index()
@@ -76,10 +70,64 @@ for attack in seq:
             temp2[1] = 1 - psum
             b = temp[-1]
             temp2[-1] = b + cost_build[attack]
-            df = df.append(temp2, ignore_index = True)
+            if temp2[-1] <= ukraine.budget:
+                df = df.append(temp2, ignore_index = True)
             
         else:
+            
             psum = temp[1:-3].sum()
                 
             temp[-2] = prob_attack[attack] * attack.val * psum + temp[-2]
             df = df.append(temp, ignore_index=True)
+            
+    #elimination of row start here
+    elim_df = df[df.loc[:,'h']== h].sort_values(by = ['invested_amt']).reset_index().drop(["index"], axis=1)
+    df = df[df.loc[:,'h'] != h]
+    #if h == 5:
+    #    break
+    #print(elim_df)
+    drop_list = set()
+    alpha = .05
+    beta = 10
+    for i in range(len(elim_df)-1):
+        if elim_df.iloc[i,-3] > 0:
+            for j in range(i+1, len(elim_df)):
+                #print('comparing {} with {}'.format(i,j))
+                if round(elim_df.iloc[j,-3],2) - alpha <= round(elim_df.iloc[i,-3],2) <= round(elim_df.iloc[j,-3],2) + alpha:
+                    
+                    #print('found')
+                    if elim_df.iloc[i,-1] <= elim_df.iloc[j,-1]:
+                        #elim_df = elim_df.drop([j]).reset_index().drop(["index"], axis=1)
+                        #print(j)
+                        drop_list.add(j)
+                    else:
+                        #elim_df = elim_df.drop([i]).reset_index().drop(["index"], axis=1)
+                        #print(i)
+                        drop_list.add(i)
+                
+                if round(elim_df.iloc[j,-1]) - beta <= round(elim_df.iloc[i,-1]) <= round(elim_df.iloc[j,-1]) + beta:
+                    
+                    if elim_df.iloc[i,-3] <= elim_df.iloc[j,-3]:
+                        #elim_df = elim_df.drop([j]).reset_index().drop(["index"], axis=1)
+                        #print(j)
+                        drop_list.add(i)
+                    else:
+                        #elim_df = elim_df.drop([i]).reset_index().drop(["index"], axis=1)
+                        #print(i)
+                        drop_list.add(j)
+                    
+                    #print('found another')
+            #print('here1')
+    elim_df = elim_df.drop(list(drop_list)).reset_index().drop(["index"], axis=1)
+    df = df.append(elim_df, ignore_index = True)
+    #print(elim_df)
+    
+    if h == len(seq):
+        result = elim_df['exp_loss'].min()
+        
+    # one way is to check whether defender can maximize the probability of P_r with less budget/same budget
+        
+    
+    
+print(df)    
+print(result)
