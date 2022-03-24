@@ -2,11 +2,13 @@ import numpy as np
 import pandas as pd
 from data_structures import Project, Honeypot, Attacker, Defender
 
+np.random.seed(0)
+
 # data Preparation
-russia = Attacker(tools=8)
+russia = Attacker(tools=5, alpha =0)
 ukraine = Defender(budget=1000)
 
-l1 = 20  # len of projects
+l1 = 10  # len of projects
 l2 = 15  # len of honeypots
 
 armored_tank = []   # projects
@@ -21,7 +23,7 @@ for i in range(l2):
     air_defense.append(Honeypot(name, int(np.random.randint(50, 200, 1))))
 
 
-prob_attack = russia.prob_to_attack(projects = armored_tank, honeypots = air_defense)
+prob_attack = ukraine.prob_to_get_attack(projects = armored_tank, honeypots = air_defense)
 cost_build = ukraine.cost_to_build(honeypots=air_defense)
 
 
@@ -56,7 +58,8 @@ for attack in seq:
         if attack not in armored_tank:
             
             #if its not touched by attacker
-            df = df.append(temp , ignore_index = True)
+            if temp[-1] <= ukraine.budget:
+                df = df.append(temp , ignore_index = True)
             
             #if its touched by attacker
             psum = 0
@@ -78,7 +81,8 @@ for attack in seq:
             psum = temp[1:-3].sum()
                 
             temp[-2] = prob_attack[attack] * attack.val * psum + temp[-2]
-            df = df.append(temp, ignore_index=True)
+            if temp[-1] <= ukraine.budget:
+                df = df.append(temp, ignore_index=True)
             
     #elimination of row start here
     elim_df = df[df.loc[:,'h']== h].sort_values(by = ['invested_amt']).reset_index().drop(["index"], axis=1)
@@ -87,8 +91,8 @@ for attack in seq:
     #    break
     #print(elim_df)
     drop_list = set()
-    alpha = .05
-    beta = 10
+    alpha = .001
+    beta = .5
     for i in range(len(elim_df)-1):
         if elim_df.iloc[i,-3] > 0:
             for j in range(i+1, len(elim_df)):
